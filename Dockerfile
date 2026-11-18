@@ -1,2 +1,3 @@
 FROM odoo:17.0
 COPY ./custom_addons /mnt/extra-addons
+CMD sh -c "python3 -c \"import os, urllib.parse; u=urllib.parse.urlparse(os.environ['DATABASE_URL']); open('/tmp/db.env','w').write(f'DB_HOST={u.hostname}\nDB_PORT={u.port}\nDB_USER={urllib.parse.unquote(u.username)}\nDB_PASSWORD={urllib.parse.unquote(u.password)}\nDB_NAME={u.path[1:]}\n')\" && export $(cat /tmp/db.env | xargs) && odoo --db_host=$DB_HOST --db_port=$DB_PORT --db_user=$DB_USER --db_password=$DB_PASSWORD --database=$DB_NAME --http-interface=0.0.0.0 --http-port=${PORT:-10000} --addons-path=/mnt/extra-addons,/usr/lib/python3/dist-packages/odoo/addons"
